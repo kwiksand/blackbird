@@ -4,4 +4,4 @@
 blackbird
 core
 logs/*
-./blackbird.conf
+blackbird.conf
