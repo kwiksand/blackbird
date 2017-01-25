@@ -25,6 +25,7 @@ struct Parameters {
   double orderBookFactor;
   bool demoMode;
   bool verbose;
+  std::string logOutputDirectory;
   std::ofstream* logFile;
   unsigned gapSec;
   unsigned debugMaxIteration;

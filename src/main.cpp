@@ -45,8 +45,23 @@ int main(int argc, char** argv) {
   std::cout << "Blackbird Bitcoin Arbitrage" << std::endl;
   std::cout << "DISCLAIMER: USE THE SOFTWARE AT YOUR OWN RISK\n" << std::endl;
   std::locale mylocale("");
+
+  std::string configFile = "blackbird.conf";
+  for (int i = 1; i < argc; ++i) {
+    std::string arg = argv[i];
+    if ((arg == "-c") || (arg == "--config")) {
+      if (i + 1 < argc) { // Make sure we aren't at the end of argv!
+        configFile = argv[(i+1)]; // Increment 'i' so we don't get the argument as the next argv[i].
+        break;
+      } else { 
+        std::cout << "--config option requires one argument." << std::endl;
+        exit(EXIT_FAILURE);
+      }  
+    }
+  }
+
   // load the parameters
-  Parameters params("blackbird.conf");
+  Parameters params(configFile);
   if (!params.demoMode) {
     if (!params.useFullCash) {
       if (params.cashForTesting < 10.0) {
@@ -192,15 +207,26 @@ int main(int argc, char** argv) {
     std::cout << "ERROR: Blackbird needs at least two Bitcoin exchanges. Please edit the config.json file to add new exchanges\n" << std::endl;
     return -1;
   }
-  // create the csv file
+  
   std::string currDateTime = printDateTimeFileName();
-  std::string csvFileName = "blackbird_result_" + currDateTime + ".csv";
+  // Parse the log output directory
+  std::string logFileName;
+  std::string csvFileName;
+  if (params.logOutputDirectory.empty()) {
+      // log to current directory
+      logFileName = "blackbird_log_" + currDateTime + ".log";
+      csvFileName = "blackbird_result_" + currDateTime + ".csv";
+  } else {
+      logFileName = params.logOutputDirectory + "blackbird_log_" + currDateTime + ".log";
+      csvFileName = params.logOutputDirectory + "blackbird_result_" + currDateTime + ".csv";
+  }
+
+  // create the csv file
   std::ofstream csvFile;
   csvFile.open(csvFileName.c_str(), std::ofstream::trunc);
   csvFile << "TRADE_ID,EXCHANGE_LONG,EXHANGE_SHORT,ENTRY_TIME,EXIT_TIME,DURATION,TOTAL_EXPOSURE,BALANCE_BEFORE,BALANCE_AFTER,RETURN\n";
   csvFile.flush();
   // create the log file
-  std::string logFileName = "blackbird_log_" + currDateTime + ".log";
   std::ofstream logFile;
   logFile.open(logFileName.c_str(), std::ofstream::trunc);
   logFile.imbue(mylocale);

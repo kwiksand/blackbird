@@ -6,6 +6,10 @@
 Parameters::Parameters(std::string fileName) {
 
   std::ifstream configFile(fileName.c_str());
+  if (!configFile.is_open()) {
+    std::cout << "ERROR: file (" + fileName + ") cannot be open.\n" << std::endl;
+    exit(EXIT_FAILURE);
+  }
   spreadEntry = getDouble(getParameter("SpreadEntry", configFile));
   spreadTarget = getDouble(getParameter("SpreadTarget", configFile));
   maxLength = getUnsigned(getParameter("MaxLength", configFile));
@@ -14,6 +18,7 @@ Parameters::Parameters(std::string fileName) {
   trailingCount = getUnsigned(getParameter("TrailingSpreadCount", configFile));
   orderBookFactor = getDouble(getParameter("OrderBookFactor", configFile));
   demoMode = getBool(getParameter("DemoMode", configFile));
+  logOutputDirectory = getParameter("LogOutputDirectory", configFile);
   verbose = getBool(getParameter("Verbose", configFile));
   gapSec = getUnsigned(getParameter("GapSec", configFile));
   debugMaxIteration = getUnsigned(getParameter("DebugMaxIteration", configFile));

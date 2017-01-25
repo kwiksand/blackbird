@@ -3,3 +3,5 @@
 *.o
 blackbird
 core
+logs/*
+./blackbird.conf
